@@ -120,12 +120,7 @@
 					<span class="text">Settings</span>
 				</a>
 			</li> -->
-			<li id="logoutBtn">
-				<a >
-					<i class='bx bx-power-off bx-sm bx-burst-hover' ></i>
-					<span class="text">Logout</span>
-				</a>
-			</li>
+			
 		</ul>
 	</section>
 	<!-- SIDEBAR -->
@@ -275,6 +270,11 @@
                     <div class="row">
                       <div class="col-md-6">
                         <label> Name</label>
+                        <input type="text" id="employer_name" class="form-control" placeholder="Enter  employer name" required>
+                      </div>
+
+                      <div class="col-md-6">
+                        <label>Employer Name</label>
                         <input type="text" id="name" class="form-control" placeholder="Enter  name" required>
                       </div>
 
@@ -345,6 +345,10 @@
                   <label>Name</label>
                   <input type="text" id="edit_name" class="form-control" required />
                 </div>
+                <div class="form-group">
+                  <label>Employer Name</label>
+                  <input type="text" id="edit_employer_name" class="form-control" required />
+                </div>
       
                 <div class="form-group">
                   <label>Address</label>
@@ -414,6 +418,7 @@
 
     const data = {
       name: document.getElementById("name").value,
+      employer_name: document.getElementById("employer_name").value,
       address: document.getElementById("address").value,
       tax_id: document.getElementById("tax_id").value,
       registration_number: document.getElementById("registration_number").value,
@@ -475,6 +480,8 @@
               <div id="expandContent-${index}" style="display: none; margin-top: 10px;">
                 <div class="company-cot">
                   <div class="row">
+                                        <div class="col-md-4"><h4>Employe _name</h4><h6>${company.employer_name || "N/A"}</h6></div>
+
                     <div class="col-md-4"><h4>Address</h4><h6>${company.address || "N/A"}</h6></div>
                     <div class="col-md-4"><h4>Registration Number</h4><h6>${company.registration_number || "N/A"}</h6></div>
                     <div class="col-md-4"><h4>Contact Email</h4><h6>${company.contact_email || "N/A"}</h6></div>
@@ -512,6 +519,7 @@
       .then((company) => {
         document.getElementById("edit_company_id").value = company.id;
         document.getElementById("edit_name").value = company.name;
+        document.getElementById("edit_employer_name").value = company.employer_name;
         document.getElementById("edit_address").value = company.address;
         document.getElementById("edit_tax_id").value = company.tax_id;
         document.getElementById("edit_registration_number").value = company.registration_number;
@@ -530,6 +538,7 @@
     const companyId = document.getElementById("edit_company_id").value;
     const updatedData = {
       name: document.getElementById("edit_name").value,
+      employer_name: document.getElementById("edit_employer_name").value,
       address: document.getElementById("edit_address").value,
       tax_id: document.getElementById("edit_tax_id").value,
       registration_number: document.getElementById("edit_registration_number").value,

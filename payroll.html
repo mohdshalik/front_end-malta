@@ -129,12 +129,7 @@
 					<span class="text">Settings</span>
 				</a>
 			</li> -->
-      <li id="logoutBtn">
-        <a >
-          <i class='bx bx-power-off bx-sm bx-burst-hover'></i>
-          <span class="text">Logout</span>
-        </a>
-      </li>
+     
     </ul>
   </section>
   <!-- SIDEBAR -->
@@ -277,14 +272,14 @@
 
 
 
-                <div class="col-md-6">
+                <!-- <div class="col-md-6">
                   <label>Select Branch</label>
                   <div class="custom-sel">
                     <select class="form-control" id="branch">
                       <option value="">-- Select Branch --</option>
                     </select>
                   </div>
-                </div>
+                </div> -->
 
 
 
@@ -525,7 +520,7 @@
           const row = `
             <tr class="payslip-row" data-id="${item.id}">
               <td>${index + 1}</td>
-              <td>${item.employee}</td>
+              <td>${item.employee?.first_name} (${item.employee?.emp_code})</td>
               <td>${payroll?.name || '-'}</td>
               <td>${monthNames[payroll?.month] || '-'}</td>
               <td>${payroll?.year || '-'}</td>
@@ -642,7 +637,7 @@ display: inline-block;
 <div class="row">
 
 <div class="col-md-6">
-    <div class="main-heading">MEETHAL VENTURES LTD</div>
+    <div class="main-heading">${company.name?.toUpperCase()}</div>
 
   </div>
 
@@ -663,7 +658,7 @@ display: inline-block;
 <!-- Employer Details -->
 <div class="row-flex" style="margin-bottom:0px">
 <div style="width: 25%;color:#8B0000;">Employer’s Name:</div>
-<div class="bordered" style="width: 35%;margin-bottom:0px"><strong>${company.name?.toUpperCase()}</strong></div>
+<div class="bordered" style="width: 35%;margin-bottom:0px"><strong>${company.employer_name?.toUpperCase()}</strong></div>
 </div>
 
 <div class="row-flex" style="margin-bottom:0px">
