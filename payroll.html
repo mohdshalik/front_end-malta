@@ -637,7 +637,7 @@ display: inline-block;
 <div class="row">
 
 <div class="col-md-6">
-    <div class="main-heading">${company.name?.toUpperCase()}</div>
+    <div class="main-heading">${company.employer_name?.toUpperCase()}</div>
 
   </div>
 
@@ -658,7 +658,7 @@ display: inline-block;
 <!-- Employer Details -->
 <div class="row-flex" style="margin-bottom:0px">
 <div style="width: 25%;color:#8B0000;">Employer’s Name:</div>
-<div class="bordered" style="width: 35%;margin-bottom:0px"><strong>${company.employer_name?.toUpperCase()}</strong></div>
+<div class="bordered" style="width: 35%;margin-bottom:0px"><strong>${company.name?.toUpperCase()}</strong></div>
 </div>
 
 <div class="row-flex" style="margin-bottom:0px">
@@ -802,7 +802,7 @@ ${payslip.components && payslip.components.length > 0
       year: document.getElementById("year").value,
       month: document.getElementById("month").value,
       payment_date: document.getElementById("payment_date").value,
-      branch: document.getElementById("branch").value,
+      // branch: document.getElementById("branch").value,
     };
 
     fetch(`${API_BASE_URL}/employee/PayrollRun/`, {
@@ -831,7 +831,7 @@ ${payslip.components && payslip.components.length > 0
         document.getElementById("year").value = run.year;
         document.getElementById("month").value = run.month;
         document.getElementById("payment_date").value = run.payment_date;
-        document.getElementById("branch").value = run.branch;
+        // document.getElementById("branch").value = run.branch;
 
         const form = document.getElementById("Payrolrunform");
         form.onsubmit = function (e) {
