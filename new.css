@@ -313,3 +313,11 @@ label{
   .list-group-item option:hover{
     background: whitesmoke;
   }
+
+
+
+  .Table_view{
+    background: white;
+    padding: 30px;
+    margin-top: 20px;
+  }

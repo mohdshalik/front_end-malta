@@ -271,7 +271,14 @@
                 </div>
 
 
-
+                <div class="col-md-6">
+                  <label>Select Salary Component</label>
+                  <div class="custom-sel">
+                    <select class="form-control" id="components">
+                      <option value="">-- Select component --</option>
+                    </select>
+                  </div>
+                </div>
                 <!-- <div class="col-md-6">
                   <label>Select Branch</label>
                   <div class="custom-sel">
@@ -316,7 +323,7 @@
 
                       <th>Month</th>
                       <th>Payment date</th>
-                      <th>Branch</th>
+                      <th>component</th>
                       <th>Status</th>
                       <th>Actions</th>
 
@@ -332,7 +339,16 @@
 
         </div>
 
-        <div id="login">
+        <div id="login" class="Table_view">
+          <div class="row mb-3">
+            <div class="col-md-4">
+              <label for="employeeFilter">Filter by Employee:</label>
+              <select id="employeeFilter" class="form-control">
+                <option value="">-- All Employees --</option>
+                <!-- Employee options will be populated dynamically -->
+              </select>
+            </div>
+          </div>
 
           <div class="row mt-4">
             <div class="col-md-12">
@@ -373,17 +389,66 @@
 
               <div class="modal-body">
                 <div class="row">
-                  <div class="col-md-10">
+                  <div class="col-md-8">
                     <h4>Payslip Details</h4>
                   </div>
+                  <div class="col-md-2">
+   <!-- 🟡 Add id here for JS -->
+   <button id="btnDownloadFS5" type="button" class="btn btn-download-fs5 btn-danger mt-3">
+    Download FS5
+  </button>
+                    </div>
                   <div class="col-md-2 text-right">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                   </div>
                 </div>
                 <hr>
 
+                <div class="fs5format" style="display:none;">
+                  <h5>FS5 Format Section</h5>
 
+                  <div class="row">
+                      <div class="col-md-6">
+                        <label> Year</label>
+                        <input type="number" id="fs5_year" class="form-control" placeholder="year" required>
+                      </div>
+      
+                      <div class="col-md-6">
+                        <label>Select Month</label>
+                        <select class="form-control" id="fs5_month" name="fs5_month" required>
+                          <option value="">-- Select Month --</option>
+                          <option value="1">January</option>
+                          <option value="2">February</option>
+                          <option value="3">March</option>
+                          <option value="4">April</option>
+                          <option value="5">May</option>
+                          <option value="6">June</option>
+                          <option value="7">July</option>
+                          <option value="8">August</option>
+                          <option value="9">September</option>
+                          <option value="10">October</option>
+                          <option value="11">November</option>
+                          <option value="12">December</option>
+                        </select>
+                      </div>
+      
 
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-8">
+                      </div>
+                      <div class="col-md-2">
+                        <button id="btnBackToPayslip" class="btn btn-fulln-secondary mt-2" style="width: 100%;background: red; color: white;">← Back</button>
+
+                      </div>
+                      <div class="col-md-2">
+                        <button type="button" class="btn btn-sucsess btn-full mt-2" id="btn-get-fs5" style="width: 100%; background: green;color: white;">Get FS5</button>
+                      </div>
+                    </div>
+                </div>
+
+                <div class="patslipdetlais">
                 <!-- 🟡 You must include this -->
                 <div id="payslipContent">
 
@@ -401,12 +466,38 @@
                     <button type="button" class="btn btn-download btn-danger mt-3">Download</button>
                   </div>
                 </div>
-
+</div>
               </div>
             </div>
           </div>
         </div>
 
+
+        <script>
+          document.addEventListener("DOMContentLoaded", function () {
+  // Get elements
+  const fs5Button = document.getElementById("btnDownloadFS5");
+  const backButton = document.getElementById("btnBackToPayslip");
+  const fs5FormatDiv = document.querySelector(".fs5format");
+  const payslipDetailsDiv = document.querySelector(".patslipdetlais");
+
+  // Hide FS5 format initially
+  fs5FormatDiv.style.display = "none";
+
+  // 🟢 FS5 Button Click → Show FS5 Format
+  fs5Button.addEventListener("click", function () {
+    fs5FormatDiv.style.display = "block";
+    payslipDetailsDiv.style.display = "none";
+  });
+
+  // 🟢 Back Button Click → Show Payslip Details Again
+  backButton.addEventListener("click", function () {
+    fs5FormatDiv.style.display = "none";
+    payslipDetailsDiv.style.display = "block";
+  });
+});
+
+        </script>
 
 
         <script>
@@ -496,8 +587,35 @@
 
   const token = localStorage.getItem("access_token");
 
+  let allPayslips = []; // to store all payslips globally
+
+
+   // ================== Load Employee Dropdown ==================
+  function loadEmployeeDropdown() {
+    fetch(`${API_BASE_URL}/employee/employee/`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((employees) => {
+        const select = document.getElementById("employeeFilter");
+        select.innerHTML = `<option value="">-- All Employees --</option>`;
+        employees.forEach((emp) => {
+          const opt = document.createElement("option");
+          opt.value = emp.id;
+          opt.textContent = `${emp.first_name} (${emp.emp_code})`;
+          select.appendChild(opt);
+        });
+      })
+      .catch((err) => console.error("Error loading employees:", err));
+  }
+
   // ================== GET Payslip List ==================
-  document.addEventListener("DOMContentLoaded", function () {
+ // ================== Fetch Payslip List ==================
+ function loadPayslips() {
     fetch(`${API_BASE_URL}/employee/payslip/`, {
       method: "GET",
       headers: {
@@ -507,34 +625,55 @@
     })
       .then((res) => res.json())
       .then((payslips) => {
-        const tableBody = document.getElementById("paySlipTableBody");
-        tableBody.innerHTML = "";
-
-        const monthNames = [
-          "", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-        ];
-
-        payslips.forEach((item, index) => {
-          const payroll = item.payroll_run;
-          const row = `
-            <tr class="payslip-row" data-id="${item.id}">
-              <td>${index + 1}</td>
-              <td>${item.employee?.first_name} (${item.employee?.emp_code})</td>
-              <td>${payroll?.name || '-'}</td>
-              <td>${monthNames[payroll?.month] || '-'}</td>
-              <td>${payroll?.year || '-'}</td>
-              <td>${payroll?.payment_date || '-'}</td>
-              <td>${item.gross_salary}</td>
-              <td>${item.total_additions}</td>
-              <td>${item.total_deductions}</td>
-              <td>${item.net_salary}</td>
-              <td>${item.status}</td>
-            </tr>`;
-          tableBody.insertAdjacentHTML("beforeend", row);
-        });
+        allPayslips = payslips; // save globally
+        renderPayslips(payslips); // show all initially
       })
       .catch((err) => console.error("Error fetching payslip data:", err));
+  }
+
+  // ================== Render Payslips to Table ==================
+  function renderPayslips(payslips) {
+    const tableBody = document.getElementById("paySlipTableBody");
+    tableBody.innerHTML = "";
+
+    const monthNames = [
+      "", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+
+    payslips.forEach((item, index) => {
+      const payroll = item.payroll_run;
+      const row = `
+        <tr class="payslip-row" data-id="${item.id}">
+          <td>${index + 1}</td>
+          <td>${item.employee?.first_name} (${item.employee?.emp_code})</td>
+          <td>${payroll?.name || '-'}</td>
+          <td>${monthNames[payroll?.month] || '-'}</td>
+          <td>${payroll?.year || '-'}</td>
+          <td>${payroll?.payment_date || '-'}</td>
+          <td>${item.gross_salary}</td>
+          <td>${item.total_additions}</td>
+          <td>${item.total_deductions}</td>
+          <td>${item.net_salary}</td>
+          <td>${item.status}</td>
+        </tr>`;
+      tableBody.insertAdjacentHTML("beforeend", row);
+    });
+  }
+
+  // ================== Employee Filter Logic ==================
+  document.addEventListener("change", function (e) {
+    if (e.target.id === "employeeFilter") {
+      const selectedEmpId = e.target.value;
+      if (selectedEmpId === "") {
+        renderPayslips(allPayslips); // show all
+      } else {
+        const filtered = allPayslips.filter(
+          (p) => p.employee && p.employee.id === parseInt(selectedEmpId)
+        );
+        renderPayslips(filtered);
+      }
+    }
   });
 
   // ================== Payslip Details Modal ==================
@@ -759,7 +898,7 @@ ${payslip.components && payslip.components.length > 0
       });
   }
 
-  // ================== CRUD Payroll Run ==================
+ // ================== CRUD Payroll Run ==================
 
   // Load Payroll Runs (Read)
   function loadPayrollRuns() {
@@ -770,9 +909,11 @@ ${payslip.components && payslip.components.length > 0
       .then((res) => res.json())
       .then((runs) => {
         const tableBody = document.getElementById("payrolrunTableBody");
+        if (!tableBody) return;
         tableBody.innerHTML = "";
 
         runs.forEach((run, index) => {
+          const compNames = run.components?.map(c => c.name).join(", ") || "N/A";
           const row = `
             <tr>
               <td>${index + 1}</td>
@@ -780,11 +921,11 @@ ${payslip.components && payslip.components.length > 0
               <td>${run.year || "N/A"}</td>
               <td>${run.month || "N/A"}</td>
               <td>${run.payment_date || "N/A"}</td>
-              <td>${run.branch || "N/A"}</td>
+              <td>${compNames}</td>
               <td>${run.status || "N/A"}</td>
               <td>
-                <button onclick="editPayrollRun(${run.id})">✏️ Edit</button>
-                <button onclick="deletePayrollRun(${run.id})">🗑 Delete</button>
+                <button onclick="editPayrollRun(${run.id})" class="btn btn-sm btn-warning">✏️ Edit</button>
+                <button onclick="deletePayrollRun(${run.id})" class="btn btn-sm btn-danger">🗑 Delete</button>
               </td>
             </tr>`;
           tableBody.insertAdjacentHTML("beforeend", row);
@@ -794,15 +935,20 @@ ${payslip.components && payslip.components.length > 0
   }
   document.addEventListener("DOMContentLoaded", loadPayrollRuns);
 
-  // Create Payroll Run
+  // ✅ Create Payroll Run
   document.getElementById("Payrolrunform").addEventListener("submit", function (e) {
     e.preventDefault();
+
+    // Convert single component value to array (ManyToMany fix)
+    const selectedComponent = document.getElementById("components").value;
+    const componentList = selectedComponent ? [parseInt(selectedComponent)] : [];
+
     const data = {
       name: document.getElementById("name").value,
-      year: document.getElementById("year").value,
-      month: document.getElementById("month").value,
+      year: parseInt(document.getElementById("year").value),
+      month: parseInt(document.getElementById("month").value),
       payment_date: document.getElementById("payment_date").value,
-      // branch: document.getElementById("branch").value,
+      components: componentList,
     };
 
     fetch(`${API_BASE_URL}/employee/PayrollRun/`, {
@@ -810,16 +956,24 @@ ${payslip.components && payslip.components.length > 0
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify(data),
     })
-      .then((res) => res.json())
+      .then(async (res) => {
+        if (!res.ok) {
+          const err = await res.json();
+          console.error("Server Error:", err);
+          alert("❌ Error: " + JSON.stringify(err));
+          throw new Error("API error");
+        }
+        return res.json();
+      })
       .then(() => {
-        alert("✅ Payroll Run created");
+        alert("✅ Payroll Run created successfully!");
         document.getElementById("Payrolrunform").reset();
         loadPayrollRuns();
       })
-      .catch(() => alert("❌ Error creating payroll run"));
+      .catch((err) => console.error("Error creating payroll run:", err));
   });
 
-  // Update Payroll Run
+  // ✅ Update Payroll Run
   function editPayrollRun(id) {
     fetch(`${API_BASE_URL}/employee/PayrollRun/${id}/`, {
       method: "GET",
@@ -831,17 +985,24 @@ ${payslip.components && payslip.components.length > 0
         document.getElementById("year").value = run.year;
         document.getElementById("month").value = run.month;
         document.getElementById("payment_date").value = run.payment_date;
-        // document.getElementById("branch").value = run.branch;
+
+        if (run.components && run.components.length > 0) {
+          document.getElementById("components").value = run.components[0].id;
+        }
 
         const form = document.getElementById("Payrolrunform");
         form.onsubmit = function (e) {
           e.preventDefault();
+
+          const selectedComponent = document.getElementById("components").value;
+          const componentList = selectedComponent ? [parseInt(selectedComponent)] : [];
+
           const updatedData = {
             name: document.getElementById("name").value,
-            year: document.getElementById("year").value,
-            month: document.getElementById("month").value,
+            year: parseInt(document.getElementById("year").value),
+            month: parseInt(document.getElementById("month").value),
             payment_date: document.getElementById("payment_date").value,
-            branch: document.getElementById("branch").value,
+            components: componentList,
           };
 
           fetch(`${API_BASE_URL}/employee/PayrollRun/${id}/`, {
@@ -861,9 +1022,10 @@ ${payslip.components && payslip.components.length > 0
       });
   }
 
-  // Delete Payroll Run
+  // ✅ Delete Payroll Run
   function deletePayrollRun(id) {
     if (!confirm("Delete this payroll run?")) return;
+
     fetch(`${API_BASE_URL}/employee/PayrollRun/${id}/`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
@@ -878,6 +1040,85 @@ ${payslip.components && payslip.components.length > 0
       })
       .catch(() => alert("❌ Error deleting payroll run"));
   }
+ // ================== FS5 Download (NEW) ==================
+ document.addEventListener("DOMContentLoaded", function () {
+    const btnGetFS5 = document.getElementById("btn-get-fs5");
+    const fs5YearInput = document.getElementById("fs5_year");
+    const fs5MonthSelect = document.getElementById("fs5_month");
+
+    if (!btnGetFS5) return; // prevent errors if FS5 section not on page
+
+    btnGetFS5.addEventListener("click", function () {
+      const year = fs5YearInput.value;
+      const month = fs5MonthSelect.value;
+
+      if (!year || !month) {
+        alert("⚠️ Please select both Year and Month");
+        return;
+      }
+
+      btnGetFS5.disabled = true;
+      btnGetFS5.textContent = "Downloading...";
+
+      const url = `${API_BASE_URL}/employee/payslip/download-fs5/?month=${month}&year=${year}`;
+
+      fetch(url, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Failed to download FS5");
+          return res.blob();
+        })
+        .then((blob) => {
+          const downloadUrl = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = downloadUrl;
+          a.download = `FS5_${month}_${year}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          window.URL.revokeObjectURL(downloadUrl);
+          alert(`✅ FS5 for ${month}/${year} downloaded successfully!`);
+        })
+        .catch((err) => {
+          console.error("Error downloading FS5:", err);
+          alert("❌ Failed to download FS5. Please try again.");
+        })
+        .finally(() => {
+          btnGetFS5.disabled = false;
+          btnGetFS5.textContent = "Get FS5";
+        });
+    });
+  });
+
+
+// ✅ Load Components Dropdown
+function loadComponentDropdown() {
+    fetch(`${API_BASE_URL}/employee/salarycomponent/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((components) => {
+        const select = document.getElementById("components");
+        select.innerHTML = `<option value="">-- Select component --</option>`;
+        components.forEach((comp) => {
+          const opt = document.createElement("option");
+          opt.value = comp.id;
+          opt.textContent = comp.name;
+          select.appendChild(opt);
+        });
+      });
+  }
+
+  // ================== INIT ==================
+  document.addEventListener("DOMContentLoaded", function () {
+    loadComponentDropdown();
+    loadEmployeeDropdown();
+    loadPayslips();
+  });
+
+
 </script>
 
 
