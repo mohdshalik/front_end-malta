@@ -392,3 +392,12 @@ label{
 .active .arrow {
     transform: rotate(180deg);
 }
+
+.payslip-box {
+  padding: 25px;
+}
+
+
+.modal-content{
+  margin-left: 80px;
+}

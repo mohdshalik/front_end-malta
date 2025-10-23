@@ -324,74 +324,76 @@
 
 
 
-
 <script>
-  // ================== Dynamic API Base ==================
-  const API_BASE_URL =
-    window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
-      ? "http://127.0.0.1:8001"
-      : "http://167.86.74.89"; // live server
-
-  const token = localStorage.getItem("access_token");
-
-  let allPayslips = []; // to store all payslips globally
-
-   // ================== FS5 Download (NEW) ==================
-   document.addEventListener("DOMContentLoaded", function () {
-    const btnGetFS5 = document.getElementById("btn-get-fs5");
-    const fs5YearInput = document.getElementById("fs5_year");
-    const fs5MonthSelect = document.getElementById("fs5_month");
-
-    if (!btnGetFS5) return; // prevent errors if FS5 section not on page
-
-    btnGetFS5.addEventListener("click", function () {
-      const year = fs5YearInput.value;
-      const month = fs5MonthSelect.value;
-
-      if (!year || !month) {
-        alert("⚠️ Please select both Year and Month");
-        return;
-      }
-
-      btnGetFS5.disabled = true;
-      btnGetFS5.textContent = "Downloading...";
-
-      const url = `${API_BASE_URL}/employee/payslip/download-fs5/?month=${month}&year=${year}`;
-
-      fetch(url, {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((res) => {
-          if (!res.ok) throw new Error("Failed to download FS5");
-          return res.blob();
+    // ================== Dynamic API Base ==================
+    const API_BASE_URL =
+      window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+        ? "http://127.0.0.1:8001"
+        : "http://84.247.143.75"; // live server
+  
+    const token = localStorage.getItem("access_token");
+  
+    document.addEventListener("DOMContentLoaded", function () {
+      const btnGetFS5 = document.getElementById("btn-get-fs5");
+      const fs5YearInput = document.getElementById("fs5_year");
+      const fs5MonthSelect = document.getElementById("fs5_month");
+  
+      if (!btnGetFS5) return; // prevent errors if FS5 section not on page
+  
+      btnGetFS5.addEventListener("click", function () {
+        const year = fs5YearInput.value;
+        const month = fs5MonthSelect.value;
+  
+        if (!year || !month) {
+          alert("⚠️ Please select both Year and Month");
+          return;
+        }
+  
+        btnGetFS5.disabled = true;
+        btnGetFS5.textContent = "Downloading...";
+  
+        // ✅ API endpoint that returns ZIP (update backend to return ZIP)
+        const url = `${API_BASE_URL}/employee/payslip/download-fs5-zip/?month=${month}&year=${year}`;
+  
+        fetch(url, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         })
-        .then((blob) => {
-          const downloadUrl = window.URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = downloadUrl;
-          a.download = `FS5_${month}_${year}.pdf`;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          window.URL.revokeObjectURL(downloadUrl);
-          alert(`✅ FS5 for ${month}/${year} downloaded successfully!`);
-        })
-        .catch((err) => {
-          console.error("Error downloading FS5:", err);
-          alert("❌ Failed to download FS5. Please try again.");
-        })
-        .finally(() => {
-          btnGetFS5.disabled = false;
-          btnGetFS5.textContent = "Get FS5";
-        });
+          .then((res) => {
+            if (!res.ok) throw new Error("Failed to download FS5 ZIP file");
+            return res.blob();
+          })
+          .then((blob) => {
+            // ✅ Ensure correct MIME type for ZIP files
+            const zipBlob = new Blob([blob], { type: "application/zip" });
+  
+            const downloadUrl = window.URL.createObjectURL(zipBlob);
+            const a = document.createElement("a");
+            a.href = downloadUrl;
+  
+            // ✅ Meaningful ZIP file name
+            a.download = `FS5_${month}_${year}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+  
+            window.URL.revokeObjectURL(downloadUrl);
+            alert(`✅ FS5 ZIP for ${month}/${year} downloaded successfully!`);
+          })
+          .catch((err) => {
+            console.error("❌ Error downloading FS5 ZIP:", err);
+            alert("❌ Failed to download FS5 ZIP file. Please try again.");
+          })
+          .finally(() => {
+            btnGetFS5.disabled = false;
+            btnGetFS5.textContent = "Get FS5";
+          });
+      });
     });
-  });
-
-
-
-</script>
-
+  </script>
+  
 
 
   <script>
