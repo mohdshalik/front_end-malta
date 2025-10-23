@@ -79,6 +79,8 @@
 				<ul class="submenu" style="display: none;">
 				  <li ><a href="salary-component.html">Salary Component</a></li>
 				  <li><a href="payroll.html">Payroll</a></li>
+                    <li><a href="fs5-master.html">FS5 Master</a></li>
+
 				</ul>
 			  </li>
 			  
@@ -267,10 +269,33 @@
                 </select>
               </div>
 
+              
 
               <div class="col-md-6">
                 <label>Code</label>
                 <input type="text" id="code" class="form-control" placeholder="Enter  code" required>
+              </div>
+              <div class="col-md-6">
+                <label>Select FS5 Field</label>
+                <select class="form-control" id="fs5_field" required>
+                  <option value="">-- Select FS5 Field --</option>
+                  <option value="None">Not Applicable</option>
+                  <option value="C1a">Overtime (eligible for 15% tax deduction)</option>
+                  <option value="C3">Taxable Fringe Benefits</option>
+                 
+                 
+                  <option value="D1">Tax Deductions (FSS Main/Other)</option>
+
+                  <option value="D2">Tax Deductions (FSS Part-time)</option>
+
+                  <option value="D3">Tax Arrears</option>
+
+                  <option value="D5">Social Security Contributions</option>
+                  <option value="D5a">Maternity Fund Contributions</option>
+
+
+                  
+                </select>
               </div>
 
               <div class="col-md-12">
@@ -392,6 +417,8 @@
 
                   <th>Code</th>
                   <th>Deduct leave</th>
+                  <th>FS5 Field</th>
+
                   <th>Is fixed</th>
                   <th>Formula</th>
                   <th>Description</th>
@@ -440,6 +467,7 @@
                       </select>
                     </div>
                   </div>
+                  
              
     <div class="col-md-6">
         <label for=""></label>
@@ -565,6 +593,8 @@ $('.tab a').on('click', function (e) {
     const data = {
   name: document.getElementById("name").value,
   component_type: document.getElementById("component_type").value,
+  fs5_field: document.getElementById("fs5_field").value,
+
   code: document.getElementById("code").value,
   deduct_leave: document.getElementById("deduct_leave").checked,
   is_fixed: document.getElementById("is_fixed").checked,
@@ -621,6 +651,8 @@ $('.tab a').on('click', function (e) {
                 <td>${comp.component_type}</td>
                 <td>${comp.code}</td>
                 <td>${comp.deduct_leave ? "Yes" : "No"}</td>
+                  <td>${comp.fs5_field}</td>
+
                 <td>${comp.is_fixed ? "Yes" : "No"}</td>
                 <td>${comp.formula || "N/A"}</td>
                 <td>${comp.description || "N/A"}</td>
@@ -809,7 +841,8 @@ $('.tab a').on('click', function (e) {
   document.addEventListener("DOMContentLoaded", function () {
     loadComponents();
     loadEmployeeSalaries();
-    loadEmployeeDropdown();
+    loadEmployeeDropdown();  
+    
     loadComponentDropdown();
   });
 </script>

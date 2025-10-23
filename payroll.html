@@ -86,6 +86,8 @@
         <ul class="submenu" style="display: none;">
           <li><a href="salary-component.html">Salary Component</a></li>
           <li><a href="payroll.html">Payroll</a></li>
+          <li><a href="fs5-master.html">FS5 Master</a></li>
+
         </ul>
       </li>
 
@@ -271,14 +273,35 @@
                 </div>
 
 
-                <div class="col-md-6">
+                <!-- <div class="col-md-6">
                   <label>Select Salary Component</label>
                   <div class="custom-sel">
                     <select class="form-control" id="components">
                       <option value="">-- Select component --</option>
                     </select>
                   </div>
-                </div>
+                </div> -->
+
+                <div class="col-md-6">
+                  <label>Select Salary Component</label>
+                  
+                  <div class="multi-select-container" id="component-multi-select">
+                      
+                      <div class="selected-items form-control" onclick="toggleDropdown('component-list', 'component-select-box')">
+                          <span id="component-select-box">-- Select component --</span>
+                          <span class="arrow">▼</span>
+                      </div>
+              
+                      <div class="dropdown-list" id="component-list">
+                          </div>
+                  </div>
+                  
+                  <select class="form-control" name="components[]" id="components" multiple style="display: none;" ></select>
+              
+              </div>
+                
+
+             
                 <!-- <div class="col-md-6">
                   <label>Select Branch</label>
                   <div class="custom-sel">
@@ -389,14 +412,10 @@
 
               <div class="modal-body">
                 <div class="row">
-                  <div class="col-md-8">
+                  <div class="col-md-10">
                     <h4>Payslip Details</h4>
                   </div>
-                  <div class="col-md-2">
-   <!-- 🟡 Add id here for JS -->
-   <button id="btnDownloadFS5" type="button" class="btn btn-download-fs5 btn-danger mt-3">
-    Download FS5
-  </button>
+              
                     </div>
                   <div class="col-md-2 text-right">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -935,112 +954,8 @@ ${payslip.components && payslip.components.length > 0
   }
   document.addEventListener("DOMContentLoaded", loadPayrollRuns);
 
-  // ✅ Create Payroll Run
-  document.getElementById("Payrolrunform").addEventListener("submit", function (e) {
-    e.preventDefault();
 
-    // Convert single component value to array (ManyToMany fix)
-    const selectedComponent = document.getElementById("components").value;
-    const componentList = selectedComponent ? [parseInt(selectedComponent)] : [];
-
-    const data = {
-      name: document.getElementById("name").value,
-      year: parseInt(document.getElementById("year").value),
-      month: parseInt(document.getElementById("month").value),
-      payment_date: document.getElementById("payment_date").value,
-      components: componentList,
-    };
-
-    fetch(`${API_BASE_URL}/employee/PayrollRun/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify(data),
-    })
-      .then(async (res) => {
-        if (!res.ok) {
-          const err = await res.json();
-          console.error("Server Error:", err);
-          alert("❌ Error: " + JSON.stringify(err));
-          throw new Error("API error");
-        }
-        return res.json();
-      })
-      .then(() => {
-        alert("✅ Payroll Run created successfully!");
-        document.getElementById("Payrolrunform").reset();
-        loadPayrollRuns();
-      })
-      .catch((err) => console.error("Error creating payroll run:", err));
-  });
-
-  // ✅ Update Payroll Run
-  function editPayrollRun(id) {
-    fetch(`${API_BASE_URL}/employee/PayrollRun/${id}/`, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then((run) => {
-        document.getElementById("name").value = run.name;
-        document.getElementById("year").value = run.year;
-        document.getElementById("month").value = run.month;
-        document.getElementById("payment_date").value = run.payment_date;
-
-        if (run.components && run.components.length > 0) {
-          document.getElementById("components").value = run.components[0].id;
-        }
-
-        const form = document.getElementById("Payrolrunform");
-        form.onsubmit = function (e) {
-          e.preventDefault();
-
-          const selectedComponent = document.getElementById("components").value;
-          const componentList = selectedComponent ? [parseInt(selectedComponent)] : [];
-
-          const updatedData = {
-            name: document.getElementById("name").value,
-            year: parseInt(document.getElementById("year").value),
-            month: parseInt(document.getElementById("month").value),
-            payment_date: document.getElementById("payment_date").value,
-            components: componentList,
-          };
-
-          fetch(`${API_BASE_URL}/employee/PayrollRun/${id}/`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-            body: JSON.stringify(updatedData),
-          })
-            .then((res) => res.json())
-            .then(() => {
-              alert("✅ Payroll Run updated");
-              form.reset();
-              form.onsubmit = null;
-              loadPayrollRuns();
-            })
-            .catch(() => alert("❌ Failed to update payroll run"));
-        };
-      });
-  }
-
-  // ✅ Delete Payroll Run
-  function deletePayrollRun(id) {
-    if (!confirm("Delete this payroll run?")) return;
-
-    fetch(`${API_BASE_URL}/employee/PayrollRun/${id}/`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => {
-        if (res.status === 204) {
-          alert("🗑 Payroll Run deleted");
-          loadPayrollRuns();
-        } else {
-          alert("❌ Failed to delete payroll run");
-        }
-      })
-      .catch(() => alert("❌ Error deleting payroll run"));
-  }
- // ================== FS5 Download (NEW) ==================
+   // ================== FS5 Download (NEW) ==================
  document.addEventListener("DOMContentLoaded", function () {
     const btnGetFS5 = document.getElementById("btn-get-fs5");
     const fs5YearInput = document.getElementById("fs5_year");
@@ -1093,25 +1008,256 @@ ${payslip.components && payslip.components.length > 0
   });
 
 
-// ✅ Load Components Dropdown
+  
+// Function to get all selected values from the multi-select <select> element
+  function getSelectedComponentIds() {
+    const selectElement = document.getElementById("components");
+    // Get all SELECTED options
+    const selectedOptions = Array.from(selectElement.options).filter(option => option.selected);
+    
+    // Map their values to integers (the IDs the API expects)
+    return selectedOptions.map(option => parseInt(option.value)).filter(id => !isNaN(id));
+}
+
+// Function to toggle the visibility of the dropdown list
+function toggleDropdown(listId, boxId) {
+    const dropdown = document.getElementById(listId);
+    const selectBox = document.getElementById(boxId).parentElement; 
+    
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    selectBox.classList.toggle('active');
+}
+
+// Function to handle the "Select All" checkbox
+function handleSelectAll(selectAllCheckbox, listId, selectId) {
+    const isChecked = selectAllCheckbox.checked;
+    const allCheckboxes = document.querySelectorAll(`#${listId} input[type="checkbox"]`);
+    
+    // Set all checkboxes (including 'Select All') to the same state
+    allCheckboxes.forEach(cb => {
+        cb.checked = isChecked;
+    });
+    
+    // CRITICAL: Call the synchronization function after changing all states
+    updateSelected(listId, selectId);
+}
+
+// CRITICAL SYNCHRONIZATION FUNCTION
+function updateSelected(listId, selectId) {
+  const dropdownList = document.getElementById(listId);
+  const selectElement = document.getElementById(selectId);
+  const selectedTextBox = document.getElementById("component-select-box"); // ✅ fixed target
+
+  let selectedText = [];
+
+  // 1️⃣ Clear previous selections in hidden <select>
+  Array.from(selectElement.options).forEach(option => option.selected = false);
+
+  // 2️⃣ Find all checked checkboxes
+  const checkboxes = dropdownList.querySelectorAll('input[type="checkbox"]:checked');
+
+  if (checkboxes.length === 0) {
+    selectedTextBox.textContent = '-- Select component --';
+  } else {
+    checkboxes.forEach(cb => {
+      const val = cb.value;
+      const name = cb.getAttribute('data-name');
+
+      if (val !== "all") {
+        const option = selectElement.querySelector(`option[value="${val}"]`);
+        if (option) option.selected = true; // ✅ correctly syncs with hidden <select>
+      }
+
+      if (val === "all") {
+        selectedText = ["All Components Selected"];
+      } else {
+        selectedText.push(name);
+      }
+    });
+
+    if (selectedText.includes("All Components Selected")) {
+      selectedTextBox.textContent = "All Components Selected";
+    } else if (selectedText.length > 3) {
+      selectedTextBox.textContent = `${selectedText.length} Components Selected`;
+    } else {
+      selectedTextBox.textContent = selectedText.join(", ");
+    }
+  }
+
+  // 3️⃣ Update "Select All" checkbox state
+  const selectAllCheckbox = dropdownList.querySelector('input[value="all"]');
+  const allOptionCheckboxes = dropdownList.querySelectorAll('input[type="checkbox"]:not([value="all"])');
+  const allChecked = Array.from(allOptionCheckboxes).every(cb => cb.checked);
+  if (selectAllCheckbox) selectAllCheckbox.checked = allChecked;
+}
+
+// Close the dropdown if the user clicks outside
+document.addEventListener('click', function(event) {
+    const container = document.getElementById('component-multi-select');
+    if (container && !container.contains(event.target)) {
+        document.getElementById('component-list').style.display = 'none';
+        document.querySelector('.selected-items').classList.remove('active');
+    }
+});
+// ✅ Load Components Dropdown (Dynamic Linking Check)
 function loadComponentDropdown() {
     fetch(`${API_BASE_URL}/employee/salarycomponent/`, {
+        headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((res) => res.json())
+    .then((components) => {
+        const selectElement = document.getElementById("components");
+        const listContainer = document.getElementById("component-list");
+
+        // Clear previous options/list items
+        selectElement.innerHTML = '';
+        listContainer.innerHTML = '';
+
+        // --- 1. Add "Select All" (Linked to handleSelectAll) ---
+        const selectAllLabel = document.createElement('label');
+        selectAllLabel.innerHTML = `
+            <input type="checkbox" value="all" data-name="Select All" 
+                   onchange="handleSelectAll(this, 'component-list', 'components')"> 
+            Select All
+        `;
+        listContainer.appendChild(selectAllLabel);
+
+
+        // --- 2. Create options and checkboxes (Linked to updateSelected) ---
+        components.forEach((comp) => {
+            // Hidden <option>
+            const opt = document.createElement("option");
+            opt.value = comp.id;
+            opt.textContent = comp.name;
+            selectElement.appendChild(opt);
+
+            // Visible checkbox (CRITICAL: Links to updateSelected)
+            const label = document.createElement('label');
+            label.innerHTML = `
+                <input type="checkbox" value="${comp.id}" data-name="${comp.name}"
+                       onchange="updateSelected('component-list', 'components')"> 
+                ${comp.name}
+            `;
+            listContainer.appendChild(label);
+        });
+        
+        // Ensure the initial display text is set
+        document.getElementById("component-select-box").textContent = '-- Select component --';
+    });
+}
+
+
+
+
+// ✅ Create Payroll Run (Submission Handler)
+document.getElementById("Payrolrunform").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    // 1. Get the array of selected component IDs from the SYNCHRONIZED hidden select
+    const selectedComponentIds = getSelectedComponentIds();
+
+    // 2. Validation Check
+    if (selectedComponentIds.length === 0) {
+        alert("❌ Please select at least one Salary Component.");
+        // Open the dropdown for better UX
+        document.getElementById('component-list').style.display = 'block';
+        document.getElementById('component-select-box').parentElement.classList.add('active');
+        return; 
+    }
+    
+    // 3. If valid, build the final payload
+    const data = {
+        name: document.getElementById("name").value,
+        year: parseInt(document.getElementById("year").value),
+        month: parseInt(document.getElementById("month").value),
+        payment_date: document.getElementById("payment_date").value,
+        components: selectedComponentIds, // This will now be [ID1, ID2, ...]
+    };
+
+    console.log("Payload to API:", data);
+
+    // 4. Proceed with the API call
+    fetch(`${API_BASE_URL}/employee/PayrollRun/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(data),
+    })
+    // ... rest of your .then().catch() chain ...
+    // (Ensure you also include the necessary multi-select utility functions: getSelectedComponentIds, toggleDropdown, etc.)
+});
+
+  // ✅ Update Payroll Run
+  function editPayrollRun(id) {
+    fetch(`${API_BASE_URL}/employee/PayrollRun/${id}/`, {
+      method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
-      .then((components) => {
-        const select = document.getElementById("components");
-        select.innerHTML = `<option value="">-- Select component --</option>`;
-        components.forEach((comp) => {
-          const opt = document.createElement("option");
-          opt.value = comp.id;
-          opt.textContent = comp.name;
-          select.appendChild(opt);
-        });
+      .then((run) => {
+        document.getElementById("name").value = run.name;
+        document.getElementById("year").value = run.year;
+        document.getElementById("month").value = run.month;
+        document.getElementById("payment_date").value = run.payment_date;
+
+        if (run.components && run.components.length > 0) {
+          document.getElementById("components").value = run.components[0].id;
+        }
+
+        const form = document.getElementById("Payrolrunform");
+        form.onsubmit = function (e) {
+    e.preventDefault();
+
+    // 🌟 FIX: Get the array of selected component IDs
+    const selectedComponentIds = getSelectedComponentIds(); 
+
+    const updatedData = {
+        name: document.getElementById("name").value,
+        year: parseInt(document.getElementById("year").value),
+        month: parseInt(document.getElementById("month").value),
+        payment_date: document.getElementById("payment_date").value,
+        // 🌟 FIX: Use the array of IDs instead of the string value
+        components: selectedComponentIds,
+    };
+
+          fetch(`${API_BASE_URL}/employee/PayrollRun/${id}/`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify(updatedData),
+          })
+            .then((res) => res.json())
+            .then(() => {
+              alert("✅ Payroll Run updated");
+              form.reset();
+              form.onsubmit = null;
+              loadPayrollRuns();
+            })
+            .catch(() => alert("❌ Failed to update payroll run"));
+        };
       });
   }
 
-  // ================== INIT ==================
+  // ✅ Delete Payroll Run
+  function deletePayrollRun(id) {
+    if (!confirm("Delete this payroll run?")) return;
+
+    fetch(`${API_BASE_URL}/employee/PayrollRun/${id}/`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        if (res.status === 204) {
+          alert("🗑 Payroll Run deleted");
+          loadPayrollRuns();
+        } else {
+          alert("❌ Failed to delete payroll run");
+        }
+      })
+      .catch(() => alert("❌ Error deleting payroll run"));
+  }
+
+
+
+// ================== INIT ==================
   document.addEventListener("DOMContentLoaded", function () {
     loadComponentDropdown();
     loadEmployeeDropdown();

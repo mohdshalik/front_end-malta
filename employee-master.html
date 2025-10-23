@@ -76,6 +76,8 @@
 				<ul class="submenu " style="display: none;">
 				  <li><a href="salary-component.html">Salary Component</a></li>
 				  <li><a href="payroll.html">Payroll</a></li>
+                    <li><a href="fs5-master.html">FS5 Master</a></li>
+
 				</ul>
 			  </li>
 			  
@@ -119,12 +121,7 @@
 					<span class="text">Settings</span>
 				</a>
 			</li> -->
-			<li id="logoutBtn">
-				<a >
-					<i class='bx bx-power-off bx-sm bx-burst-hover' ></i>
-					<span class="text">Logout</span>
-				</a>
-			</li>
+		
 		</ul>
 	</section>
 	<!-- SIDEBAR -->
@@ -315,7 +312,7 @@
 
                       <div class="col-md-6">
                         <label>Last Name</label>
-                        <input type="text" id="last_name" class="form-control" placeholder="Enter  last name" required>
+                        <input type="text" id="last_name" class="form-control" placeholder="Enter  last name">
                       </div>
 
                       <div class="col-md-6">
@@ -327,46 +324,46 @@
 
                       <div class="col-md-6">
                         <label>Email</label>
-                        <input type="email" id="email" class="form-control" placeholder="Enter  email" required>
+                        <input type="email" id="email" class="form-control" placeholder="Enter  email">
                       </div>
 
 
                       <div class="col-md-6">
                         <label>Phone Number</label>
-                        <input type="number" id="phone_number" class="form-control" placeholder="Enter  phone number" required>
+                        <input type="number" id="phone_number" class="form-control" placeholder="Enter  phone number">
                       </div>
 
                       
                       <div class="col-md-6">
                         <label>Date Of Birth</label>
-                        <input type="date" id="date_of_birth" class="form-control" placeholder="Enter  date of birth" required>
+                        <input type="date" id="date_of_birth" class="form-control" placeholder="Enter  date of birth">
                       </div>
 
                       <div class="col-md-6">
                         <label>Hire Date</label>
-                        <input type="date" id="hired_date" class="form-control" placeholder="Enter hire date" required>
+                        <input type="date" id="hired_date" class="form-control" placeholder="Enter hire date">
                       </div>
 
                       <div class="col-md-6">
                         <label>Social Security Number</label>
-                        <input type="text" id="social_security_no" class="form-control" placeholder="Enter social security no" required>
+                        <input type="text" id="social_security_no" class="form-control" placeholder="Enter social security no" >
                       </div>
 
                       <div class="col-md-6">
                         <label>Tax Registration Number</label>
-                        <input type="text" id="Tax_Registration_Number" class="form-control" placeholder="Enter tax registration number" required>
+                        <input type="text" id="Tax_Registration_Number" class="form-control" placeholder="Enter tax registration number" >
                       </div>
                       
 
                       <div class="col-md-6">
                         <label>Bank Account Number</label>
-                        <input type="text" id="Bank_Account_Number" class="form-control" placeholder="Enter bank account number" required>
+                        <input type="text" id="Bank_Account_Number" class="form-control" placeholder="Enter bank account number" >
                       </div>
                       
 
                       <div class="col-md-6">
                         <label>Fss status</label>
-                        <input type="text" id="fss_status" class="form-control" placeholder="Enter Fss status" required>
+                        <input type="text" id="fss_status" class="form-control" placeholder="Enter Fss status" >
                       </div>
                       
 
@@ -375,7 +372,7 @@
 
                       <div class="col-md-6">
                         <label>Select Employee Type </label>
-                        <select class="form-control" id="type_of_employment" required>
+                        <select class="form-control" id="type_of_employment" >
                           <option value="">-- Select Employee Type --</option>
                           <option value="part_time">Part Time</option>
                           <option value="full_time">Full Time</option>
@@ -663,44 +660,105 @@
   // -----------------------------
   // CREATE Employee
   // -----------------------------
-  document.getElementById("userForm").addEventListener("submit", function (e) {
-    e.preventDefault();
-    const token = localStorage.getItem('access_token');
-    const data = {
-      emp_code: emp_code.value,
-      first_name: first_name.value,
-      last_name: last_name.value,
-      address: address.value,
-      email: email.value,
-      phone_number: phone_number.value,
-      date_of_birth: date_of_birth.value,
-      hired_date: hired_date.value,
-      social_security_no: social_security_no.value,
-      Tax_Registration_Number: Tax_Registration_Number.value,
-      Bank_Account_Number: Bank_Account_Number.value,
-      fss_status: fss_status.value,
-      type_of_employment: type_of_employment.value,
-      company: company.value,
-      emp_dept_id: emp_dept_id.value,
-      job_title: job_title.value,
-      category: category.value,
-    };
+  // document.getElementById("userForm").addEventListener("submit", function (e) {
+  //   e.preventDefault();
+  //   const token = localStorage.getItem('access_token');
+  //   const data = {
+  //     emp_code: emp_code.value,
+  //     first_name: first_name.value,
+  //     last_name: last_name.value,
+  //     address: address.value,
+  //     email: email.value,
+  //     phone_number: phone_number.value,
+  //     date_of_birth: date_of_birth.value,
+  //     hired_date: hired_date.value,
+  //     social_security_no: social_security_no.value,
+  //     Tax_Registration_Number: Tax_Registration_Number.value,
+  //     Bank_Account_Number: Bank_Account_Number.value,
+  //     fss_status: fss_status.value,
+  //     type_of_employment: type_of_employment.value,
+  //     company: company.value,
+  //     emp_dept_id: emp_dept_id.value,
+  //     job_title: job_title.value,
+  //     category: category.value,
+  //   };
   
-    fetch(`${API_BASE_URL}/employee/employee/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-      body: JSON.stringify(data)
+  //   fetch(`${API_BASE_URL}/employee/employee/`, {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+  //     body: JSON.stringify(data)
+  //   })
+  //   .then(res => res.json())
+  //   .then(() => {
+  //     alert("Employee Created");
+  //     $("#myModal").modal("hide");
+  //     loadEmployees();
+  //   });
+  // });
+
+  document.getElementById("userForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  const token = localStorage.getItem("access_token");
+
+  const data = {
+    emp_code: document.getElementById("emp_code").value,
+    first_name: document.getElementById("first_name").value,
+    last_name: document.getElementById("last_name").value,
+    address: document.getElementById("address").value,
+    email: document.getElementById("email").value,
+    phone_number: document.getElementById("phone_number").value,
+    date_of_birth: document.getElementById("date_of_birth").value,
+    hired_date: document.getElementById("hired_date").value,
+    social_security_no: document.getElementById("social_security_no").value,
+    Tax_Registration_Number: document.getElementById("Tax_Registration_Number").value,
+    Bank_Account_Number: document.getElementById("Bank_Account_Number").value,
+    fss_status: document.getElementById("fss_status").value,
+    type_of_employment: document.getElementById("type_of_employment").value,
+    company: document.getElementById("company").value,
+    emp_dept_id: document.getElementById("emp_dept_id").value,
+    job_title: document.getElementById("job_title").value,
+    category: document.getElementById("category").value,
+  };
+
+  fetch(`${API_BASE_URL}/employee/employee/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify(data),
+  })
+    .then(async (res) => {
+      const result = await res.json();
+
+      if (!res.ok) {
+        // Collect error messages from API
+        let messages = [];
+        for (const [field, errs] of Object.entries(result)) {
+          messages.push(`${field}: ${errs.join(", ")}`);
+        }
+        throw new Error(messages.join("\n"));
+      }
+
+      return result;
     })
-    .then(res => res.json())
     .then(() => {
-      alert("Employee Created");
+      alert("✅ Employee Created Successfully");
       $("#myModal").modal("hide");
+      document.getElementById("userForm").reset();
       loadEmployees();
+    })
+    .catch((err) => {
+      alert("❌ Error creating employee:\n" + err.message);
+      console.error("Employee create error:", err);
     });
-  });
+});
+
+
+
   
   // -----------------------------
-  // EDIT Employee
+  // EDIT Employee  
   // -----------------------------
   function editEmployee(empId) {
     const token = localStorage.getItem('access_token');
