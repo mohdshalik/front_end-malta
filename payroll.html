@@ -1109,39 +1109,65 @@ function loadComponentDropdown() {
 
 // ✅ Create Payroll Run (Submission Handler)
 document.getElementById("Payrolrunform").addEventListener("submit", function (e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    // 1. Get the array of selected component IDs from the SYNCHRONIZED hidden select
-    const selectedComponentIds = getSelectedComponentIds();
+  // 1️⃣ Get selected components
+  const selectedComponentIds = getSelectedComponentIds();
 
-    // 2. Validation Check
-    if (selectedComponentIds.length === 0) {
-        alert("❌ Please select at least one Salary Component.");
-        // Open the dropdown for better UX
-        document.getElementById('component-list').style.display = 'block';
-        document.getElementById('component-select-box').parentElement.classList.add('active');
-        return; 
-    }
-    
-    // 3. If valid, build the final payload
-    const data = {
-        name: document.getElementById("name").value,
-        year: parseInt(document.getElementById("year").value),
-        month: parseInt(document.getElementById("month").value),
-        payment_date: document.getElementById("payment_date").value,
-        components: selectedComponentIds, // This will now be [ID1, ID2, ...]
-    };
+  // 2️⃣ Validation check
+  if (selectedComponentIds.length === 0) {
+    alert("❌ Please select at least one Salary Component.");
+    document.getElementById("component-list").style.display = "block";
+    document
+      .getElementById("component-select-box")
+      .parentElement.classList.add("active");
+    return;
+  }
 
-    console.log("Payload to API:", data);
+  // 3️⃣ Build payload
+  const data = {
+    name: document.getElementById("name").value,
+    year: parseInt(document.getElementById("year").value),
+    month: parseInt(document.getElementById("month").value),
+    payment_date: document.getElementById("payment_date").value,
+    components: selectedComponentIds,
+  };
 
-    // 4. Proceed with the API call
-    fetch(`${API_BASE_URL}/employee/PayrollRun/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify(data),
+  console.log("Payload to API:", data);
+
+  // 4️⃣ Post to API
+  fetch(`${API_BASE_URL}/employee/PayrollRun/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  })
+    .then((res) => {
+      if (!res.ok) {
+        return res.json().then((err) => {
+          console.error("Error response:", err);
+          throw new Error("❌ Failed to create payroll run");
+        });
+      }
+      return res.json();
     })
-    // ... rest of your .then().catch() chain ...
-    // (Ensure you also include the necessary multi-select utility functions: getSelectedComponentIds, toggleDropdown, etc.)
+    .then((result) => {
+      console.log("✅ Payroll Run Created:", result);
+      alert("✅ Payroll Run Created Successfully!");
+      // Optional: reload only the payroll runs table
+      if (typeof loadPayrollRuns === "function") {
+        loadPayrollRuns();
+      } else {
+        // fallback: reload page
+        location.reload();
+      }
+    })
+    .catch((error) => {
+      console.error("❌ Error:", error);
+      alert("❌ Failed to create Payroll Run. Please try again.");
+    });
 });
 
   // ✅ Update Payroll Run
