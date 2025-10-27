@@ -314,11 +314,21 @@
 </div>
 
 <div class="col-md-6">
+  <label for=""></label>
+  <div class="form-check form-control ">
+      <input class="form-check-input" type="checkbox" value="" id="is_fixed" >
+      <label class="form-check-label" for="is_fixed">
+        Is Fixed
+      </label>
+    </div>
+</div>   
+
+<div class="col-md-6">
     <label for=""></label>
     <div class="form-check form-control ">
-        <input class="form-check-input" type="checkbox" value="" id="is_fixed" checked>
-        <label class="form-check-label" for="is_fixed">
-          Is Fixed
+        <input class="form-check-input" type="checkbox" value="" id="for_formula" checked>
+        <label class="form-check-label" for="for_formula">
+          For Formula
         </label>
       </div>
 </div>   
@@ -598,6 +608,8 @@ $('.tab a').on('click', function (e) {
   code: document.getElementById("code").value,
   deduct_leave: document.getElementById("deduct_leave").checked,
   is_fixed: document.getElementById("is_fixed").checked,
+  for_formula: document.getElementById("for_formula").checked,
+
   formula: document.getElementById("formula").value,
   description: document.getElementById("description").value,
 };
@@ -677,6 +689,8 @@ $('.tab a').on('click', function (e) {
         code.value = comp.code;
         deduct_leave.checked = comp.deduct_leave;
         is_fixed.checked = comp.is_fixed;
+        for_formula.checked = comp.for_formula;
+
         formula.value = comp.formula;
         description.value = comp.description;
         editComponentId = id;
@@ -1006,4 +1020,15 @@ window.addEventListener('click', function (e) {
         menu.style.display = 'none';
       });
     });
+</script>
+
+<script>
+  $(document).ready(function () {
+    $('#for_formula').change(function () {
+      if (!$(this).is(':checked')) {
+        $('#myModal').modal('show'); // Show modal if unchecked
+      }
+    });
+  });
+
 </script>

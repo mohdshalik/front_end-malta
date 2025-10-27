@@ -1,13 +1,13 @@
 // modal popup open js in salary component
 
 
-$(document).ready(function () {
-    $('#is_fixed').change(function () {
-      if (!$(this).is(':checked')) {
-        $('#myModal').modal('show'); // Show modal if unchecked
-      }
-    });
-  });
+// $(document).ready(function () {
+//     $('#is_fixed').change(function () {
+//       if (!$(this).is(':checked')) {
+//         $('#myModal').modal('show'); // Show modal if unchecked
+//       }
+//     });
+//   });
 
 
 
@@ -87,37 +87,37 @@ $(document).ready(function () {
 
 
 
-// get employee
+// // get employee
 
 
-document.addEventListener("DOMContentLoaded", function () {
-    const token = localStorage.getItem('access_token');
+// document.addEventListener("DOMContentLoaded", function () {
+//     const token = localStorage.getItem('access_token');
 
-    fetch('http://127.0.0.1:8001/employee/employee/', {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => {
-      if (!response.ok) throw new Error("Failed to fetch employee");
-      return response.json();
-    })
-    .then(companies => {
-      const companySelect = document.getElementById("employee");
+//     fetch('http://127.0.0.1:8001/employee/employee/', {
+//       method: 'GET',
+//       headers: {
+//         'Authorization': `Bearer ${token}`,
+//         'Content-Type': 'application/json'
+//       }
+//     })
+//     .then(response => {
+//       if (!response.ok) throw new Error("Failed to fetch employee");
+//       return response.json();
+//     })
+//     .then(companies => {
+//       const companySelect = document.getElementById("employee");
 
-      companies.forEach(employee => {
-        const option = document.createElement("option");
-        option.value = employee.id;
-        option.textContent = employee.emp_code;
-        companySelect.appendChild(option);
-      });
-    })
-    .catch(error => {
-      console.error("Error fetching Employee list:", error);
-    });
-  });
+//       companies.forEach(employee => {
+//         const option = document.createElement("option");
+//         option.value = employee.id;
+//         option.textContent = employee.emp_code;
+//         companySelect.appendChild(option);
+//       });
+//     })
+//     .catch(error => {
+//       console.error("Error fetching Employee list:", error);
+//     });
+//   });
 
 
 
